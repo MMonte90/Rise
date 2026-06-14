@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RISE">
+<meta name="theme-color" content="#0a0a0a">
+<title>RISE — Manuel Montenegro</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:#0a0a0a}
+body{font-family:-apple-system,'SF Pro Text','Helvetica Neue',sans-serif;color:#fff;max-width:480px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom,20px);min-height:100vh;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+a{text-decoration:none;color:inherit}
+.page{display:none}
+.page.active{display:block;animation:fade .2s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* HEADER */
+.header{padding:env(safe-area-inset-top,28px) 20px 18px;background:linear-gradient(180deg,#131313,#0a0a0a);border-bottom:1px solid #1e1e1e}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.greeting{font-size:11px;color:#888;letter-spacing:1.5px;text-transform:uppercase}
+.name{font-size:28px;font-weight:900;letter-spacing:-.8px;margin-top:2px}
+.streak-wrap{text-align:center}
+.streak-badge{display:flex;align-items:center;gap:4px;background:#1a1a1a;border:1px solid #FF3B0D44;border-radius:12px;padding:7px 13px}
+.streak-num{font-size:22px;font-weight:900;color:#FF3B0D;line-height:1}
+.streak-label{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.quote-box{background:#141414;border:1px solid #262626;border-left:3px solid #FF3B0D;border-radius:8px;padding:12px 14px;margin-bottom:14px}
+.quote-text{font-size:13px;color:#ddd;font-style:italic;line-height:1.6}
+.quote-author{font-size:11px;color:#666;margin-top:6px;text-align:right}
+.total-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}
+.total-bar{height:7px;background:#222;border-radius:4px;overflow:hidden}
+.total-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.complete-msg{text-align:center;margin-top:10px;font-size:13px;font-weight:800;color:#00C878;letter-spacing:1px}
+
+/* WEEK DOTS */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.day-dot{height:34px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#161616;border:1px solid #2a2a2a;font-size:9px;font-weight:700;color:#555;gap:2px}
+.day-dot.partial{background:#FF3B0D22;border-color:#FF3B0D55;color:#FF6B3D}
+.day-dot.full{background:#00C87822;border-color:#00C87855;color:#00C878}
+
+/* TOOLS GRID */
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tool-btn{background:#131313;border:1px solid #242424;border-radius:12px;padding:13px 8px;display:flex;flex-direction:column;align-items:center;gap:5px}
+.tool-btn:active{transform:scale(.97)}
+.tool-emoji{font-size:22px}
+.tool-label{font-size:9px;font-weight:800;letter-spacing:.5px;color:#888}
+
+/* PILLARS */
+.pillars-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pillar-card{background:#131313;border:1px solid #242424;border-radius:13px;padding:14px 12px;text-align:left}
+.pillar-card:active{transform:scale(.98)}
+.pc-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.pc-emoji{font-size:20px}
+.pc-label{font-size:11px;font-weight:800;letter-spacing:.5px}
+.mini-bar{height:5px;background:#222;border-radius:3px;overflow:hidden;margin-bottom:8px}
+.mini-fill{height:100%;border-radius:3px;transition:width .4s}
+.pc-stats{display:flex;justify-content:space-between;align-items:center}
+
+/* VIDEO */
+.v-card{display:flex;align-items:flex-start;gap:13px}
+.v-thumb{width:52px;height:52px;background:linear-gradient(135deg,#1a0a00,#4a1800);border:1px solid #FF3B0D55;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;color:#FF3B0D;flex-shrink:0}
+.v-thumb.today{background:linear-gradient(135deg,#FF3B0D,#FF6B3D);border:none;color:#fff}
+.v-name{font-weight:800;font-size:14px;margin-bottom:3px}
+.v-by{font-size:12px;color:#888;margin-bottom:4px}
+.v-note{font-size:12px;color:#FF6B3D;font-style:italic}
+
+/* SECTION */
+.sec{background:#131313;border:1px solid #242424;border-radius:14px;padding:15px;margin-bottom:10px}
+.sec-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+.sec-label{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#666}
+.sec-link{font-size:12px;font-weight:600;color:#FF6B3D}
+
+/* BOTTOM BAR */
+.bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(10,10,10,0.97);border-top:1px solid #222;padding:10px 16px env(safe-area-inset-bottom,14px);display:flex;align-items:center;gap:10px;z-index:999;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.bb-back{display:flex;align-items:center;gap:6px;background:#1e1e1e;border:1px solid #2e2e2e;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:700;color:#ccc;flex-shrink:0}
+.bb-back:active{transform:scale(.97)}
+.bb-title{font-size:12px;font-weight:800;color:#666;letter-spacing:.5px;flex:1;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bb-space{width:72px;flex-shrink:0}
+.sub-wrap{padding:env(safe-area-inset-top,24px) 16px 100px;min-height:100vh}
+
+/* TASKS */
+.task-btn{display:flex;align-items:center;gap:11px;border:1px solid #2a2a2a;background:#161616;border-radius:11px;padding:13px;text-align:left;width:100%;margin-bottom:8px}
+.task-check{font-size:18px;font-weight:700;width:20px;flex-shrink:0;color:#444}
+.task-text{font-size:13px;line-height:1.4;flex:1;color:#bbb}
+.key-tag{font-size:9px;font-weight:800;border:1px solid;border-radius:5px;padding:2px 6px;flex-shrink:0}
+
+/* GYM */
+.yt-btn{background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;color:#FF3B0D;text-decoration:none}
+.ex-item{display:flex;align-items:flex-start;gap:10px;background:#111;border:1px solid #222;border-radius:9px;padding:11px 13px;margin-bottom:7px}
+.ex-check{width:22px;height:22px;border-radius:6px;border:2px solid #333;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;color:#444}
+.ex-name{font-size:13px;font-weight:700;margin-bottom:2px}
+.ex-detail{font-size:11px;color:#888;line-height:1.5}
+.ex-tip{font-size:11px;color:#FF6B3D;margin-top:3px;font-style:italic}
+
+/* NUTRITION */
+.macro-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.macro-box{background:#111;border:1px solid #222;border-radius:10px;padding:12px 8px;text-align:center}
+.macro-num{font-size:20px;font-weight:900;line-height:1}
+.macro-unit{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.macro-label{font-size:10px;color:#888;margin-top:4px}
+.meal-item{background:#111;border:1px solid #222;border-radius:10px;padding:12px 13px;margin-bottom:8px}
+.meal-time{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:5px}
+.meal-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.meal-desc{font-size:12px;color:#888;line-height:1.5}
+
+/* SUPPLEMENTS */
+.supp-item{display:flex;align-items:flex-start;gap:12px;background:#111;border:1px solid #222;border-radius:10px;padding:12px 13px;margin-bottom:8px}
+.supp-icon{font-size:22px;flex-shrink:0}
+.supp-name{font-size:13px;font-weight:800;margin-bottom:2px}
+.supp-dose{font-size:12px;color:#ccc;margin-bottom:3px}
+.supp-why{font-size:11px;color:#888;line-height:1.5}
+
+/* HORMONAL */
+.hormone-card{background:#111;border:1px solid #222;border-radius:10px;padding:13px;margin-bottom:8px}
+.hc-impact{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:6px}
+
+/* RUTINA */
+.rutina-block{background:#111;border:1px solid #222;border-radius:11px;padding:13px;margin-bottom:8px}
+.rutina-time{font-size:11px;font-weight:800;letter-spacing:1px;margin-bottom:6px}
+.rutina-title{font-size:14px;font-weight:800;margin-bottom:3px}
+.rutina-desc{font-size:12px;color:#aaa;line-height:1.6}
+.rutina-tip{font-size:11px;margin-top:6px;font-style:italic}
+.phase-badge{display:inline-block;font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;margin-bottom:10px;letter-spacing:.5px}
+
+/* PANTALLAS TRACKER */
+.screen-display{text-align:center;padding:20px 0 10px}
+.screen-num{font-size:56px;font-weight:900;line-height:1}
+.screen-unit{font-size:13px;color:#888;margin-top:4px}
+.screen-bar{height:10px;background:#222;border-radius:5px;overflow:hidden;margin:14px 0 8px}
+.screen-fill{height:100%;border-radius:5px;transition:width .4s}
+.screen-btns{display:flex;gap:10px;margin-top:10px}
+.screen-btn{flex:1;padding:12px;border-radius:10px;font-size:13px;font-weight:800;border:1px solid #2a2a2a;background:#161616;color:#ccc}
+.screen-btn.red{background:#FF3B0D22;border-color:#FF3B0D55;color:#FF6B3D}
+.screen-btn.green{background:#00C87822;border-color:#00C87855;color:#00C878}
+
+/* CONEXION */
+.conex-item{background:#111;border:1px solid #222;border-radius:11px;padding:13px;margin-bottom:8px}
+.conex-title{font-size:13px;font-weight:800;margin-bottom:4px}
+.conex-desc{font-size:12px;color:#aaa;line-height:1.6}
+.conex-action{font-size:12px;font-weight:700;margin-top:7px}
+.week-challenge{background:linear-gradient(135deg,#1a0d20,#0d0a1a);border:1px solid #A020F055;border-radius:12px;padding:14px;margin-bottom:12px}
+.wc-label{font-size:10px;font-weight:800;letter-spacing:1px;color:#C96BFF;margin-bottom:6px}
+.wc-text{font-size:13px;color:#ddd;line-height:1.6}
+
+/* COACH */
+.coach-card{display:flex;align-items:center;gap:14px;background:#131313;border:1px solid #242424;border-radius:13px;padding:15px;text-align:left;margin-bottom:8px;width:100%}
+.cc-emoji{font-size:24px}
+.cc-title{font-size:15px;font-weight:800;color:#fff}
+.cc-desc{font-size:12px;color:#666;margin-top:2px}
+.coach-para{font-size:15px;margin-bottom:13px;color:#ccc;line-height:1.8}
+.epic-line{font-size:17px;font-weight:900;color:#fff;letter-spacing:.5px;margin:16px 0 8px;border-left:3px solid #FF3B0D;padding-left:12px;line-height:1.4}
+
+/* VIDEOS LIST */
+.video-item{display:flex;align-items:flex-start;gap:13px;background:#131313;border:1px solid #242424;border-radius:12px;padding:13px;margin-bottom:8px}
+.video-item.today{border:1px solid #FF3B0D55;background:linear-gradient(135deg,#1a0d08,#130a05)}
+.today-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:1px;color:#fff;background:#FF3B0D;border-radius:5px;padding:2px 7px;margin-bottom:5px}
+
+/* GUIDE */
+.guide-block{background:#131313;border:1px solid #242424;border-radius:13px;padding:15px;margin-bottom:10px}
+.guide-block.red{background:#1a0d0d;border:1px solid #FF3B0D33}
+.guide-h{font-size:12px;font-weight:800;color:#fff;letter-spacing:.5px;margin-bottom:10px}
+.guide-item{font-size:12px;color:#bbb;line-height:1.65;margin-bottom:8px}
+.guide-item:last-child{margin-bottom:0}
+
+/* ALERT */
+.alert-box{background:#1a1000;border:1px solid #FF8C0044;border-radius:10px;padding:13px;margin-bottom:12px}
+.alert-title{font-size:12px;font-weight:800;color:#FF8C00;margin-bottom:6px}
+.alert-text{font-size:12px;color:#ddd;line-height:1.6}
+
+/* COMMON */
+.hype-btn{width:100%;background:linear-gradient(135deg,#FF3B0D,#FF6B3D);border-radius:11px;color:#fff;font-weight:900;font-size:15px;padding:14px;letter-spacing:.5px;margin-bottom:10px}
+.hype-btn:active{transform:scale(.98)}
+.menu-btn-sm{width:100%;background:transparent;border:1px solid #2e2e2e;border-radius:10px;color:#888;font-size:13px;padding:10px}
+.sub-title{font-size:22px;font-weight:900;margin:14px 0 6px}
+.sub-intro{color:#aaa;font-size:13px;line-height:1.6;margin-bottom:18px}
+.done-btn{width:100%;background:transparent;border:1px solid #00C878;border-radius:11px;color:#00C878;font-size:13px;font-weight:800;padding:13px;letter-spacing:.5px;margin-bottom:10px}
+.done-btn.done{border:1px solid #2a2a2a;color:#555}
+.footer-note{text-align:center;font-size:11px;color:#444;font-style:italic}
+.g-blue{color:#4D9EFF}.g-red{color:#FF6B3D}.g-green{color:#2EE894}.g-purple{color:#C96BFF}
+.divider{height:1px;background:#1e1e1e;margin:16px 0}
+.pad{padding:12px 0 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ---
+//  RISE v4 · Manuel Montenegro · Sistema completo
+// ---
+
+const PILLARS=[
+  {id:"gym",emoji:"🔥",label:"CUERPO",color:"#FF3B0D",accent:"#FF6B3D",desc:"Gym + Apariencia",
+   why:"El cuerpo es la base de todo. Energía, testosterona, ánimo, confianza — todo sale de aquí. Es la palanca más importante del sistema.",
+   tasks:[
+     {t:"Ir a MindFit o moverse 30 min",key:true},
+     {t:"Proteína: shake + comida proteica",key:true},
+     {t:"Creatina 5g con agua",key:false},
+     {t:"2L de agua mínimo",key:false},
+     {t:"Verte bien: ropa, pelo, presencia",key:false},
+     {t:"Dormir antes de las 11pm",key:false},
+   ],
+   tip:"La energía baja no es tu identidad. Es el resultado del sedentarismo pidiéndote movimiento. No esperes sentirte bien para moverte — muévete para sentirte bien."},
+  {id:"magister",emoji:"🧠",label:"MAGÍSTER",color:"#0D7BFF",accent:"#4D9EFF",desc:"Data Science · UAI",
+   why:"En 2028 vas a leer datos como otros leen el diario. Cada sesión de 25 min hoy es una pieza de ese Manuel.",
+   tasks:[
+     {t:"25 min Python — Exercism o HackerRank",key:true},
+     {t:"Repasar apuntes de la última clase",key:false},
+     {t:"Consolidar UN concepto nuevo",key:false},
+     {t:"Avanzar en tarea o proyecto",key:false},
+   ],
+   tip:"La retención no es talento — es repetición espaciada. 25 min hoy valen más que 3 horas el domingo."},
+  {id:"trabajo",emoji:"🏆",label:"LABORAL",color:"#00C878",accent:"#2EE894",desc:"Mutual de Seguridad",
+   why:"Ya redujiste $30M en costos. Adjudicaste $130M en licitaciones. Ese método existe — repítelo hoy.",
+   tasks:[
+     {t:"Tarea más difícil antes del mediodía",key:true},
+     {t:"Hablar claro y directo en reuniones",key:false},
+     {t:"Documentar algo reutilizable",key:false},
+     {t:"Cerrar el día sin urgencias colgando",key:false},
+   ],
+   tip:"No le tienes que demostrar nada a nadie. Solo seguir siendo el tipo que entrega."},
+  {id:"persona",emoji:"🌟",label:"PERSONA",color:"#A020F0",accent:"#C96BFF",desc:"Vida & Conexión",
+   why:"Tienes conexiones sociales pero superficiales. La soledad no se resuelve saliendo más — se resuelve profundizando y agregando contextos con propósito.",
+   tasks:[
+     {t:"Conexión real — profundizar, no solo salir",key:false},
+     {t:"Máx 1h de pantallas recreativas hoy",key:true},
+     {t:"10 min sin celular ni trabajo",key:false},
+     {t:"2 min de reflexión antes de dormir",key:false},
+   ],
+   tip:"Quieres encontrar a alguien. Eso pasa siendo la mejor versión de ti y en los contextos correctos — no en el bar de siempre con las mismas personas."},
+];
+
+const EPIC_QUOTES=[
+  {text:"¿Por qué caemos? Para aprender a levantarnos.",author:"Batman Begins"},
+  {text:"No es cuánto te golpea la vida. Es cuánto aguantas y sigues avanzando.",author:"Rocky Balboa"},
+  {text:"La grandeza no se crea en la comodidad. Se forja en el dolor.",author:"Eric Thomas"},
+  {text:"No le pidas a la vida que sea más fácil. Pídete a ti ser más fuerte.",author:"Goggins"},
+  {text:"Puedes llorar. Pero no te rindas.",author:"Will Smith"},
+  {text:"Eres dueño de tu mente, no de las circunstancias.",author:"Marco Aurelio"},
+  {text:"Disciplina es elegir entre lo que quieres ahora y lo que quieres más.",author:"A. Lincoln"},
+  {text:"Nadie va a venir a salvarte. Eres tú. Siempre fuiste tú.",author:"Goggins"},
+  {text:"La testosterona no se compra. Se suda, se duerme y se construye.",author:"RISE"},
+  {text:"El hombre que quieres ser ya existe. Solo tienes que ir a buscarlo.",author:"RISE"},
+  {text:"El scroll no te da energía. Te la roba. Ciérralo.",author:"RISE"},
+  {text:"Las conexiones superficiales son ruido. Busca profundidad.",author:"RISE"},
+];
+
+const VIDEOS=[
+  {id:"mgmVOuLgFB0",title:"Why Do We Fall",by:"Mateusz M · Hans Zimmer",note:"Tu favorito. El origen de todo."},
+  {id:"g-jwWYX7Jlo",title:"Dream",by:"Mateusz M · Eric Thomas · Will Smith",note:"55M de vistas. Puro fuego."},
+  {id:"6sv_ghkTtF0",title:"Inception × The Great Dictator",by:"Hans Zimmer · Chaplin",note:"El discurso más humano jamás escrito."},
+  {id:"7yzC-uW2w1c",title:"Time — Motivational",by:"Hans Zimmer · Rocky · Gladiator",note:"Para los que quieren ganar."},
+  {id:"3Ni_VQFuTCg",title:"This Secret Will Change Everything",by:"Eric Thomas",note:"El secreto del éxito, sin rodeos."},
+  {id:"wnHW6o8WMas",title:"No Excuses",by:"Ben Lionel Scott",note:"27M de vistas. Cero excusas."},
+  {id:"h2VVCAP6WOc",title:"Time — Dolomites 4K",by:"Hans Zimmer · Italia",note:"Visualmente brutal. Respira."},
+  {id:"T9PXj4Rj94Q",title:"Top 10 Epic Speeches",by:"MotivationGrid",note:"Los 10 mejores discursos de la historia."},
+  {id:"iwnIrKyXtSw",title:"Stop Making Excuses",by:"Eric Thomas",note:"Cuando te estás justificando."},
+  {id:"BbPOk6WRTv4",title:"Hans Zimmer — Best Of",by:"Pierre T.",note:"Solo música. Para entrenar o trabajar."},
+];
+
+const GYM_PLAN=[
+  {day:"Dia A",type:"EMPUJE",color:"#FF3B0D",focus:"Pecho · Hombros · Triceps",
+   warmup:"5 min bici + aperturas livianas x15 + press vacio x10",
+   context:"PRIORIDAD: construir pectoral + grosor de triceps. Palancas largas = rango completo y tempo lento, no peso maximo.",
+   exercises:[
+     {name:"Press inclinado (30-45 grados)",sets:"4",reps:"8-10",rest:"90s",
+      alts:["Maquina press inclinado","Mancuernas banco inclinado","Barra banco inclinado"],
+      tip:"CLAVE pecho alto. Baja 3 seg, pausa 1 seg abajo. La maquina es valida — permite mas control del rango."},
+     {name:"Press de pecho plano",sets:"3",reps:"10-12",rest:"75s",
+      alts:["Maquina press pecho plano","Mancuernas banco plano","Barra banco plano"],
+      tip:"Pecho completo. Codos a 45 grados del cuerpo — no a 90. La maquina permite bajar mas sin perder control."},
+     {name:"Aperturas / Cable crossover",sets:"3",reps:"12-15",rest:"60s",
+      alts:["Polea baja cruce (cable crossover)","Maquina de aperturas (pec deck)","Mancuernas banco plano o inclinado"],
+      tip:"La maquina pec deck o la polea son MEJORES que mancuernas — tension constante en todo el rango. Junta manos adelante y aprieta el pecho 1 seg."},
+     {name:"Press de hombros",sets:"3",reps:"10-12",rest:"75s",
+      alts:["Maquina press de hombros","Mancuernas sentado","Barra multipower (Smith)"],
+      tip:"Hombros anchos hacen la diferencia visual a 190cm. La maquina es perfecta para empezar — estabilidad total. Controla la bajada."},
+     {name:"Elevaciones laterales",sets:"3",reps:"15",rest:"60s",
+      alts:["Maquina elevaciones laterales","Mancuernas de pie","Polea baja 1 brazo"],
+      tip:"2 seg subiendo, 3 bajando. Sin impulso. La polea baja da tension constante abajo que las mancuernas no dan."},
+     {name:"Extension triceps (cabeza larga)",sets:"3",reps:"12",rest:"60s",
+      alts:["Polea alta cuerda (pushdown)","Maquina de triceps","Extension sobre cabeza con mancuerna"],
+      tip:"VOLUMEN BRAZO. La cuerda: abre al final para activar cabeza lateral. Sobre cabeza activa la cabeza larga — la mas grande. Codos fijos."},
+     {name:"Press frances / Triceps en elongacion",sets:"3",reps:"10-12",rest:"60s",
+      alts:["Press frances barra Z en banco","Extension polea alta con cuerda sobre cabeza","Maquina de triceps con codo arriba"],
+      tip:"Activa la cabeza larga en estiramiento — donde mas crece. Si la maquina lo permite, hazlo con el codo apuntando arriba."},
+   ]},
+  {day:"Dia B",type:"JALON",color:"#0D7BFF",focus:"Espalda ancha · Biceps · Core",
+   warmup:"5 min + jalones livianos al pecho x15",
+   context:"PRIORIDAD: espalda ancha + biceps con volumen real. Palancas largas = rango completo + supinacion. Ego al vestuario.",
+   exercises:[
+     {name:"Jalon al pecho",sets:"4",reps:"8-10",rest:"90s",
+      alts:["Maquina jalon cable agarre ancho","Polea alta agarre ancho","Dominadas asistidas (si hay maquina)"],
+      tip:"Agarre ancho, codos hacia el piso. Pausa abajo 1 seg apretando la espalda. La maquina de cable es ideal — tension en todo el rango."},
+     {name:"Remo horizontal",sets:"3",reps:"10-12",rest:"75s",
+      alts:["Maquina remo sentado (cable o placas)","Remo con mancuerna 1 brazo en banco","Remo en polea baja agarre neutro"],
+      tip:"Jala con el CODO, no con el biceps. Pausa atras 1 seg. La maquina de remo sentado es perfecta para MindFit."},
+     {name:"Remo en maquina / Pull over",sets:"3",reps:"12",rest:"75s",
+      alts:["Maquina pull over (si existe)","Remo en maquina convergente","Polea alta agarre neutro cerrado"],
+      tip:"Trabaja el dorsal en elongacion. Si hay maquina pull over, usala — es excelente para dar ancho a la espalda sin cargar la columna."},
+     {name:"Curl biceps",sets:"4",reps:"10-12",rest:"75s",
+      alts:["Maquina curl biceps","Barra Z o barra recta","Mancuernas alternadas sentado"],
+      tip:"VOLUMEN BRAZO. Baja COMPLETO — el estiramiento abajo es donde crece. 3 seg bajando. La maquina permite tension constante abajo que la barra no da."},
+     {name:"Curl martillo (braquial)",sets:"3",reps:"12 c/lado",rest:"60s",
+      alts:["Mancuernas agarre neutro","Polea baja cuerda agarre martillo","Maquina curl si permite agarre neutro"],
+      tip:"Trabaja el braquial — el musculo DEBAJO del biceps que lo empuja hacia arriba. Hace el brazo parecer mas grueso. Agarre neutro, sin rotar."},
+     {name:"Curl concentrado / pico",sets:"2",reps:"15 c/lado",rest:"45s",
+      alts:["Mancuerna codo apoyado en muslo","Polea baja sentado brazo apoyado","Maquina curl 1 brazo si existe"],
+      tip:"Aislamiento total. Codo fijo, solo mueve el antebrazo. Aprieta arriba 1 seg. Al final de la sesion cuando el peso no importa — solo la contraccion."},
+     {name:"Plancha abdominal",sets:"3",reps:"40-50s",rest:"45s",
+      alts:["Plancha en el suelo","Plancha en TRX si hay","Plancha con rodillas si no aguantas completa"],
+      tip:"Core duro. Respira controlado. No dejes caer las caderas."},
+   ]},
+  {day:"Dia C",type:"PIERNAS",color:"#00C878",focus:"Cuadriceps · Gluteos · Femorales · Pantorrillas",
+   warmup:"5 min bici + 15 sentadillas peso corporal + 10 zancadas lentas",
+   context:"Motor hormonal. Piernas pesadas suben testosterona mas que cualquier suplemento. No te saltes este dia.",
+   exercises:[
+     {name:"Sentadilla o Prensa",sets:"4",reps:"8-10",rest:"2min",
+      alts:["Prensa de piernas (maquina)","Sentadilla goblet con mancuerna","Sentadilla en Smith (multipower)"],
+      tip:"EL ejercicio hormonal. La prensa es perfecta si no dominas la sentadilla libre — misma activacion, menos riesgo de tecnica. Rodillas afuera, baja hasta 90 grados minimo."},
+     {name:"Extension de cuadriceps",sets:"3",reps:"12-15",rest:"75s",
+      alts:["Maquina extension de cuadriceps","Prensa a 1 pierna si no hay maquina","Sentadilla bulgara con mancuerna"],
+      tip:"Aislamiento total del cuadriceps. Pausa 1 seg arriba apretando. Controla la bajada lenta. Todas las maquinas de piernas son validas."},
+     {name:"Curl femoral",sets:"3",reps:"12",rest:"75s",
+      alts:["Maquina curl femoral tumbado","Maquina curl femoral sentado","Peso muerto rumano con mancuernas"],
+      tip:"FEMORALES. Contrae fuerte arriba, baja 3 seg. Si hay ambas maquinas (tumbado y sentado), el tumbado activa mas la cabeza larga del femoral."},
+     {name:"Peso muerto rumano",sets:"3",reps:"10-12",rest:"90s",
+      alts:["Mancuernas peso muerto rumano","Barra peso muerto rumano","Maquina de femoral de pie si existe"],
+      tip:"CLAVE hormonal. Siente el estiramiento del femoral al bajar — ese es el trabajo. Espalda recta siempre. Las mancuernas son perfectas para aprender la tecnica."},
+     {name:"Zancadas",sets:"3",reps:"10 c/lado",rest:"75s",
+      alts:["Zancadas caminando con mancuernas","Maquina de zancadas (hack squat inverso)","Zancada estatica en Smith"],
+      tip:"Gluteo + cuadricep juntos. Torso erguido, rodilla trasera cerca del piso. Si hay maquina de zancadas o Smith, usala para mas estabilidad."},
+     {name:"Pantorrilla de pie",sets:"4",reps:"20",rest:"45s",
+      alts:["Maquina elevacion pantorrilla de pie","Elevacion en escalon con tu peso","Prensa de piernas pies en borde (pantorrilla sentado)"],
+      tip:"Pausa arriba 1 seg, baja lento hasta estiramiento completo. Con 101kg tu peso corporal ya es suficiente carga en el escalon."},
+   ]},
+];
+
+const NUTRITION={
+  // Datos reales del nutricionista Gustavo Sepúlveda (noviembre 2025)
+  // Pauta calculada para 101.7kg, 190cm, objetivo recomposición
+  // Días sin gym: 2.075 kcal | Días con gym: 2.400 kcal
+  calories:2075,caloriesTraining:2400,protein:138,proteinTraining:178,carbs:253,carbs_training:290,fat:57,
+  meals:[
+    {time:"06:30 AM",icon:"🌅",title:"Desayuno",
+     desc:"2 marraquetas sin miga + 3 huevos revueltos + 1 taza leche semi descremada + café.\nSi el desayuno fue liviano: shake de proteína.",
+     protein:38,tip:"Según tu pauta real: 2 porciones de cereal + 3 porciones de cárnicos en el desayuno. Los huevos en la mañana estabilizan la glucosa y evitan el bajón de las 11am."},
+    {time:"10:30 AM",icon:"🥜",title:"Colación mañana",
+     desc:"1 manzana (o cualquier fruta de tu pauta).\nOpcional: 1 yogur + 30g frutos secos.",
+     protein:6,tip:"La fruta pre-almuerzo estabiliza el hambre. La pauta de Gustavo indica 2 frutas en la colación."},
+    {time:"01:00 PM",icon:"🍗",title:"Almuerzo (comida clave)",
+     desc:"3/4 taza arroz cocido + palma de la mano de pollo/carne/atún (150g) + ensalada grande con aceite de oliva.\nTallarines: agrega atún o pollo mezclado en la salsa.",
+     protein:48,tip:"Tu pauta indica 1.5 porciones cereal + 3 porciones cárnicos + 2 verduras al almuerzo. No la saltes ni la reemplaces."},
+    {time:"05:30 PM",icon:"🍌",title:"Pre-gym (días de entrenamiento)",
+     desc:"½ plátano 30-45 min antes de entrenar.\nDías sin gym: 1 yogur + fruta.",
+     protein:5,tip:"El plátano da energía rápida sin pesarte. Entra al gym 30-45 min después. Para tu peso (101kg), la cafeína pre-gym óptima es 300-600mg (3-6 tazas equivalente)."},
+    {time:"08:00 PM",icon:"🍫",title:"Post-gym: leche chocolatada",
+     desc:"100-150ml leche chocolatada AL TERMINAR el gym (dentro de 2 horas).\nProporción CHO:Proteína 3.5:1 — recuperación muscular probada científicamente.",
+     protein:8,tip:"Gustavo lo indica específicamente. Para 101kg: 100-150ml. Colun, Soprole, cualquier marca. Esto reduce el daño muscular y recarga glucógeno para entrenar igual de fuerte mañana."},
+    {time:"08:30 PM",icon:"🌙",title:"Once / Cena",
+     desc:"2 marraquetas sin miga + 100g pechuga de pollo + tomate + 1 taza leche semi descremada.\nOpción: 3 huevos + ensalada si no quieres más pan.",
+     protein:40,tip:"Tu pauta indica 2 porciones cereal + 2 cárnicos + 1 lácteo en la once. La proteína nocturna alimenta la recuperación mientras duermes."},
+  ]
+};
+
+const SUPPLEMENTS=[
+  {icon:"💪",name:"Proteína en polvo (Whey)",color:"#FF3B0D",priority:"ESENCIAL",
+   dose:"1 scoop después de entrenar — según pauta de Gustavo",
+   when:"Post-gym. Si el día no hay gym y el desayuno fue liviano, también en la mañana.",
+   why:"Tu pauta real indica Whey post-entreno para recuperación muscular. Con 178.5g de proteína target los días de gym, el shake ayuda a llegar al número."},
+  {icon:"⚡",name:"Creatina monohidrato",color:"#0D7BFF",priority:"ESENCIAL",
+   dose:"5g diarios · cualquier hora · con agua",
+   when:"Cualquier momento. Consistencia diaria > momento exacto.",
+   why:"El más respaldado por ciencia. Más fuerza, más músculo, energía mental. Importante para brazos: permite más volumen de entrenamiento por sesión."},
+  {icon:"☕",name:"Cafeína pre-gym",color:"#FF8C00",priority:"RECOMENDADO",
+   dose:"Para 101kg: 300-600mg · 30-45 min antes de entrenar",
+   when:"30-45 min antes del gym. EVITAR después de las 6pm o afecta el sueño.",
+   why:"Café filtrado = 95mg/taza. Para tu peso, 3 tazas equivalen a 285mg — dosis efectiva baja. Aumenta fuerza, retrasa fatiga, reduce percepción de dolor. Tu nutricionista lo menciona explícitamente."},
+  {icon:"☀️",name:"Vitamina D3",color:"#A020F0",priority:"URGENTE",
+   dose:"2000-4000 UI/día · con comida con grasa",
+   when:"Con el almuerzo. Siempre con aceite, palta o huevo.",
+   why:"Precursora directa de testosterona. Déficit muy común en Santiago por vida indoor. Baja libido, energía y ánimo cuando falta — exactamente lo que describes. Mídela en el examen de sangre."},
+  {icon:"🔬",name:"Zinc + Magnesio (ZMA)",color:"#00C878",priority:"RECOMENDADO",
+   dose:"Zinc 25mg + Magnesio 300mg · de noche",
+   when:"30 min antes de dormir, estómago vacío.",
+   why:"Zinc = producción de testosterona. Magnesio = sueño profundo donde se produce el 90% de la T. Ya duermes antes de las 11pm — ZMA maximiza esas horas."},
+  {icon:"🍫",name:"Leche chocolatada post-gym",color:"#FF8C00",priority:"ESENCIAL",
+   dose:"100-150ml dentro de 2h de terminar el gym",
+   when:"Al salir de MindFit o al llegar a casa. Antes de 2 horas post-entreno.",
+   why:"Tu nutricionista lo indica explícitamente. Proporción CHO:Proteína 3.5:1 demostrada para recuperación. Reduce daño muscular (CK) mejor que bebidas deportivas comerciales."},
+];
+
+// DATOS ANTROPOMÉTRICOS REALES (noviembre 2025)
+const ANTROPO = {
+  fecha:"03/11/2025",
+  peso:101.7,
+  talla:190,
+  masaAdiposa:29.8,
+  pctAdiposa:29.3,
+  masaMuscular:43.6,
+  pctMuscular:42.8,
+  somatotipo:{endo:5.3,meso:4,ecto:1.2},
+  objetivo:{
+    pesoMeta:"95-97 kg",
+    pctGrasaMeta:"18-20%",
+    nota:"No bajar de peso — cambiar composición. A 190cm, 95kg bien compuestos se ven completamente distintos."
+  },
+  prioridades:[
+    "Grasa abdominal y flancos: responde bien al déficit + fuerza. Primera en irse visualmente.",
+    "Pecho: construir músculo debajo con press inclinado + aperturas. Cuando baje la grasa, aparece la forma.",
+    "Brazos: palancas largas de 190cm. Volumen específico con curl barra + martillo + press francés. Tempo lento.",
+    "Hombros: ya tienes base. Ampliarlos con laterales y press crea la V que hace la cintura parecer más estrecha.",
+  ],
+  foto:{
+    dia:14, // día del mes para la foto
+    nota:"Mismo baño, misma luz, mismo encuadre. Frente + perfil derecho + espalda. Guardarlas en álbum 'RISE Progreso'.",
+  }
+};
+
+const HORMONAL=[
+  {icon:"😴",title:"Sueño 7-8h",impact:"CRÍTICO",impactColor:"#FF3B0D",
+   desc:"El 90% de la testosterona se produce durante el sueño profundo. Ya te acuestas antes de las 11pm — eso es oro. Protégelo.",
+   action:"✅ Ya lo haces bien. Mantenerlo es tan importante como el gym."},
+  {icon:"🏋️",title:"Fuerza compuesta",impact:"ALTO",impactColor:"#FF8C00",
+   desc:"Sentadilla, peso muerto y press son los movimientos con mayor respuesta anabólica. No el cardio — la fuerza pesada.",
+   action:"🎯 Tu plan A/B/C ya los incluye. Priorizarlos cada sesión."},
+  {icon:"📱",title:"Scroll excesivo (cortisol digital)",impact:"ALTO",impactColor:"#FF8C00",
+   desc:"Más de 2h de scroll mezclado (Instagram, YouTube, Netflix sin propósito) eleva cortisol de fondo, baja dopamina real y fragmenta la concentración. Drena más de lo que entretiene.",
+   action:"🎯 Límite de 1h recreativa. Tracker de pantallas integrado en RISE."},
+  {icon:"🍺",title:"Alcohol",impact:"ANTAGONISTA",impactColor:"#FF3B0D",
+   desc:"Inhibe producción de T hasta 72h. Convierte testosterona en estrógeno. El cortisol que genera compite con la T. Lo de la otra noche tuvo aquí gran parte de su causa.",
+   action:"🎯 Máximo 1-2 copas cuando salgas. No todos los fines de semana."},
+  {icon:"😤",title:"Estrés crónico",impact:"MODERADO",impactColor:"#FF8C00",
+   desc:"El cortisol y la T comparten precursores. Magíster + pega + incertidumbre = carga real. Los 10 min sin pantalla son medicamento, no opcional.",
+   action:"🎯 Está en tu pilar Persona. No lo saltes."},
+  {icon:"🔬",title:"Examen de sangre",impact:"NECESARIO",impactColor:"#4D9EFF",
+   desc:"Sin datos no hay diagnóstico. Pide: Testosterona total y libre, Vitamina D (25-OH), TSH, hemograma, glucosa.",
+   action:"💰 Costo aprox: $30.000-50.000 en laboratorio privado. Vale cada peso."},
+];
+
+// RUTINA DIARIA — basada en horarios reales de Manuel
+const RUTINA=[
+  {time:"06:30 AM",emoji:"⏰",title:"Despertar + RISE",color:"#FF3B0D",
+   desc:"Abres RISE antes que Instagram. Lees la frase del día. Ves tus 4 pilares. Eso marca el tono de todo lo que viene.",
+   tip:"El primer toque del teléfono determina el estado mental de la mañana. Que sea RISE, no redes.",
+   phase:"MAÑANA"},
+  {time:"06:45 AM",emoji:"💊",title:"Suplementos + Desayuno",color:"#FF8C00",
+   desc:"Creatina 5g con agua. Desayuno con proteína (huevos). Café sin azúcar. Si el desayuno fue liviano, shake de proteína.",
+   tip:"Prepara lo mínimo la noche anterior — deja el shaker limpio y los huevos listos para no improvisar.",
+   phase:"MAÑANA"},
+  {time:"07:15 AM",emoji:"🧠",title:"25 min Python",color:"#0D7BFF",
+   desc:"Antes de abrir correos ni Slack. La mente fresca en la mañana retiene 40% más que en la noche. Un ejercicio de Exercism o HackerRank.",
+   tip:"No necesitas sentirte inspirado. Abres el editor y empiezas. La motivación llega después del primer minuto.",
+   phase:"MAÑANA"},
+  {time:"08:00 AM",emoji:"🏢",title:"Trabajo",color:"#00C878",
+   desc:"Primera hora: la tarea más difícil. Sin correos, sin reuniones si puedes. El cerebro está en su peak cognitivo.",
+   tip:"La tarea difícil que dejas para después nunca se siente más fácil. Solo más pesada.",
+   phase:"TRABAJO"},
+  {time:"01:00 PM",emoji:"🍗",title:"Almuerzo proteico",color:"#FF8C00",
+   desc:"150-200g de proteína + carbos + ensalada. Esta es la comida clave. No la saltes ni la reemplaces con comida rápida vacía.",
+   tip:"Si comes fuera, pide siempre la versión con más proteína. Pollo, carne, huevos — lo que haya.",
+   phase:"TRABAJO"},
+  {time:"06:00 PM",emoji:"🏋️",title:"MindFit Los Leones",color:"#FF3B0D",
+   desc:"Días A, B o C según corresponda. 45-60 min. Pre-gym: plátano + shake 30 min antes. Esta sesión sube tu T, dopamina y serotonina por 24h.",
+   tip:"No evalúes si 'tienes ganas'. La regla es simple: después del trabajo, vas. No se negocia.",
+   phase:"TARDE"},
+  {time:"07:30 PM",emoji:"🌙",title:"Cena liviana + recuperación",color:"#A020F0",
+   desc:"Proteína liviana (huevos, atún) + ensalada. Ducha. Zinc + Magnesio si los tienes. Ropa del gym mañana dejada lista.",
+   tip:"La recuperación es parte del entrenamiento. No es el tiempo perdido después del gym.",
+   phase:"NOCHE"},
+  {time:"08:00 PM",emoji:"📱",title:"Pantallas: máx 1 hora",color:"#FF8C00",
+   desc:"Series, YouTube, Instagram — pero con límite consciente de 1h. Usa el tracker de RISE. Cuando el tiempo se acaba, se acaba.",
+   tip:"El scroll sin límite no descansa el cerebro — lo fragmenta. 1h con propósito descansa más que 3h de scroll automático.",
+   phase:"NOCHE"},
+  {time:"09:30 PM",emoji:"📖",title:"Tiempo de calidad",color:"#0D7BFF",
+   desc:"30 min de algo que te aporte: leer, repasar apuntes del magíster, planificar el día siguiente, o simplemente sentarte sin pantalla.",
+   tip:"Este bloque es donde la diferencia entre tú y el resto se construye silenciosamente.",
+   phase:"NOCHE"},
+  {time:"10:30 PM",emoji:"😴",title:"Cierre del día",color:"#2EE894",
+   desc:"Marcar RISE. 2 min de reflexión. Apagar pantallas. En cama antes de las 11pm. Tu sueño ya es tu mayor activo — protégelo.",
+   tip:"Ya dormís bien. Ese hábito vale más que cualquier suplemento. No lo rompas por scroll.",
+   phase:"NOCHE"},
+];
+
+// RUTINA FUTURA (objetivo: gym antes del trabajo)
+const RUTINA_FUTURA={
+  when:"Cuando lleves 4-6 semanas con la rutina actual consolidada",
+  change:"Mover el gym a las 6:30 AM antes del trabajo",
+  benefit:"Testosterona peak en la mañana + resto del día libre + mejor rendimiento cognitivo en el trabajo",
+  steps:[
+    "Semana 1-4: gym después del trabajo (rutina actual)",
+    "Semana 5: probar una mañana de gym para testear",
+    "Semana 6+: si funcionó, cambiar a mañanas permanente",
+  ]
+};
+
+// CONEXIÓN REAL — módulo específico para situación de Manuel
+const CONEXION=[
+  {emoji:"🔍",title:"El problema real",color:"#A020F0",
+   desc:"Tienes vida social activa pero conexiones superficiales. Eso significa que el problema no es cantidad — es calidad y contexto. Salir más al mismo bar con las mismas personas no lo va a resolver.",
+   action:""},
+  {emoji:"📡",title:"Profundizar lo que ya tienes",color:"#4D9EFF",
+   desc:"Elige 1-2 personas de tu círculo actual con quienes sientes que podría haber más profundidad. Un almuerzo de 1:1, una conversación real, un plan con propósito — no solo salir.",
+   action:"🎯 Esta semana: un mensaje real a alguien del círculo. No un 'hola cómo estás' — algo concreto."},
+  {emoji:"🌱",title:"Contextos nuevos con propósito",color:"#00C878",
+   desc:"Los bares y el alcohol no son el mejor contexto para conectar de verdad ni para conocer a alguien con quien compartir algo real. Agrega uno de estos: gym (ya lo tienes), deporte en grupo, clase de algo, voluntariado, meetup del magíster.",
+   action:"🎯 Próximo mes: explorar un contexto nuevo. El gym ya cuenta."},
+  {emoji:"💪",title:"La versión de ti que atrae",color:"#FF3B0D",
+   desc:"La mejor estrategia para encontrar pareja no es salir más — es trabajar en ti mientras sales. El cuerpo, la energía, la confianza que estás construyendo con RISE es exactamente eso. La gente que vale la pena se siente atraída por personas con dirección.",
+   action:"🎯 Acción diaria: los 4 pilares de RISE. El resto llega solo."},
+  {emoji:"🍺",title:"El alcohol como filtro social",color:"#FF8C00",
+   desc:"Salir seguido con copas genera conexiones artificiales que no sobreviven la sobriedad. Prueba planes sin alcohol: desayunos, deporte, actividades. Las conexiones reales no necesitan lubricante.",
+   action:"🎯 Próxima salida: sugiere un plan sin alcohol o reduce a 1-2 copas. Observa qué cambia."},
+];
+
+// SPEECHES — actualizados con contexto específico de Manuel
+const SPEECHES={
+  hype:[
+    ["Manuel, párate.","Llevas 6 años entregando. Redujiste 30 millones donde otros prometían. Lideraste a 25 personas. Eso no es suerte — es tu forma de operar.","Pero ahora hay algo más en juego. No es solo la pega. Es el cuerpo que quieres, el magíster que empezaste, la vida que te mereces. Todo eso se construye en decisiones como esta — hoy, cuando no tienes ganas.","Goggins no esperaba las ganas. Rocky no esperaba las ganas. Tú tampoco las necesitas.","HOY ES DÍA UNO. QUE NUNCA SEA DÍA UNO OTRA VEZ."],
+    ["¿Sabes cuál es tu mayor enemigo? No es la energía baja. No es la procrastinación. Eres tú, cuando sabes exactamente qué hacer y decides no hacerlo.","Eso termina hoy. El gym no espera que te sientas listo. Python no espera que tengas inspiración. La vida que quieres no espera que estés de humor.","Una decisión. Un movimiento. El resto se acomoda solo.","EL MOVIMIENTO CREA LA MOTIVACIÓN. NO AL REVÉS."],
+    ["La baja energía que sientes no es permanente. Es bioquímica. El cuerpo sedentario produce menos dopamina, menos testosterona, menos ganas de todo.","Una sesión en MindFit revierte eso en 45 minutos. No en semanas — en horas. La ciencia lo confirma. Tu cuerpo lo sabe.","Pero tienes que ir primero. Esa es la única trampa.","MUÉVETE. TODO LO DEMÁS LLEGA SOLO."],
+  ],
+  weak:[
+    ["Sé que no quieres nada ahora. Lo sé.","Pero escúchame: estás exactamente donde todos se rinden. Y ahí es donde se decide quién llega y quién se queda.","Una tarea. La más pequeña. Marca algo en RISE, abre Exercism 10 minutos, deja la ropa del gym lista para mañana. Un movimiento que demuestre que tú mandas — no el cansancio.","UNO. SOLO UNO. HAZLO."],
+    ["Para antes de cerrar el teléfono. Pregúntate una cosa: ¿vas a despertar mañana orgulloso de este momento o vas a despertar con esa sensación de haberle fallado a algo?","No te pido reventarte. Te pido no irte en blanco. La diferencia entre los que llegan y los que no, muchas veces es solo eso — no irse en blanco.","TÚ MANDAS. EL CANSANCIO MIENTE."],
+  ],
+  weekend:[
+    ["Fin de semana. Donde se gana o se pierde todo.","El lunes no se gana el lunes. Se gana hoy, cuando no hay obligaciones, cuando nadie te ve, cuando la cama tira más que nunca.","No te pido sacrificar el finde. Te pido 30 minutos en MindFit o 25 min de Python. Después disfruta — sin culpa, porque te la ganaste.","30 MINUTOS. DESPUÉS VIVE."],
+    ["Tu competencia descansa este fin de semana. Esa es tu ventana.","No es lo que haces cuando estás motivado lo que define lo que serás. Es lo que haces este sábado, cuando nadie te obliga.","DECIDE QUIÉN ERES HOY."],
+  ],
+  procrastina:[
+    ["Sé lo que está pasando. Sabes exactamente qué tienes que hacer. Y no lo estás haciendo.","Eso no es falta de capacidad — eres un ingeniero con un magíster, eres más que capaz. Es el cerebro buscando el camino de menor resistencia. El scroll, la serie, 'después'.","La técnica es simple: no pienses. Abre el editor y escribe la primera línea. Abre el gym y haz el primer ejercicio. El cerebro no puede resistir el movimiento — solo la idea del movimiento.","ABRE. EMPIEZA. EL RESTO VIENE SOLO."],
+    ["La procrastinación no es un problema de tiempo. Es un problema de inicio.","Una vez que empiezas, el 80% de la resistencia desaparece. El cuerpo y la mente se activan con el movimiento, no antes.","Regla de los 2 minutos: si algo toma menos de 2 minutos, hazlo ahora. Si toma más, empieza 2 minutos y decide después si paras.","EMPIEZA. DOS MINUTOS. YA."],
+  ],
+  energia:[
+    ["La energía baja que sientes tiene nombre: sedentarismo + falta de proteína + scroll excesivo + desconexión social.","Eso no es quién eres. Es lo que le pasa a un cuerpo al que no le han dado lo que necesita.","La solución no es esperar sentirte con energía. Es hacer UNA cosa que la genere: moverte 15 minutos. Tomar el shake. Salir a caminar. El cuerpo responde al movimiento con energía — siempre.","MUÉVETE AUNQUE SEA 15 MINUTOS. EL CUERPO RESPONDE."],
+  ],
+  soledad:[
+    ["Las conexiones superficiales duelen más que la soledad. Lo sé.","Tienes gente alrededor pero no se siente real. Y eso, paradójicamente, puede sentirse más solo que estar solo.","Pero escucha: eso no es culpa de la gente — es el contexto. Bares, alcohol, siempre lo mismo. No se construye profundidad en ese entorno.","Esta semana: un mensaje real a una persona real. No 'hola cómo estás'. Algo concreto. Una conversación de verdad.","LA PROFUNDIDAD SE CONSTRUYE. NO APARECE SOLA."],
+  ],
+  coach:[
+    ["Plan para las próximas 24 horas:","1. Mañana 6:30 AM: abre RISE antes que Instagram.","2. 7:15 AM: 25 min de Python. Sin excepciones.","3. En el trabajo: la tarea más difícil primero.","4. 6 PM: MindFit. Plátano + shake 30 min antes.","5. 10:30 PM: en cama. Pantallas fuera.","EJECUTA. SIN DRAMA. UNO A LA VEZ."],
+  ],
+  check:[
+    ["Check-in. Responde honesto:","1. ¿Qué estás evitando hoy, y cuánto te está costando evitarlo?","2. ¿Tu energía de hoy es causa o consecuencia de lo que hiciste ayer?","3. ¿Cuántas horas de pantalla llevas hoy? ¿Qué te dieron?","Recuerda: la energía baja no es tu identidad. Es la suma de decisiones pequeñas. Y se revierte con decisiones pequeñas.","UN DÍA A LA VEZ. PERO TODOS LOS DÍAS."],
+  ],
+  review:[
+    ["Revisión de rendimiento:","Lo que funciona: estás aquí, usando el sistema. Eso ya te pone adelante del 90%.","Lo que ajustar: las pantallas y la procrastinación son tu mayor pérdida de tiempo. Ahí están las 2+ horas diarias que el gym y el magíster necesitan.","Reto de la semana: 7 días con máx 1h de pantallas recreativas. Mide qué cambia en tu energía y ánimo.","CONSISTENCIA SOBRE INTENSIDAD. SIEMPRE."],
+  ],
+};
+
+// ── ESTADO ────────────────────────────────────────────
+const STORE_KEY="rise_v4";
+let state={
+  checked:{},streak:0,bestStreak:0,lastDone:null,
+  dismissedWeak:false,gymDayIdx:0,weekLog:{},
+  screenMinutes:0,screenDate:"",
+};
+try{const s=localStorage.getItem(STORE_KEY);if(s)state=Object.assign(state,JSON.parse(s));}catch(e){}
+function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(state));}catch(e){}}
+
+// Reset screen tracker si es nuevo día
+function checkScreenDay(){
+  const tk=todayKey();
+  if(state.screenDate!==tk){state.screenMinutes=0;state.screenDate=tk;save();}
+}
+
+// ── UTILIDADES ────────────────────────────────────────
+function todayKey(){return new Date().toISOString().split("T")[0];}
+function greeting(){const h=new Date().getHours();return h<12?"Buenos días":h<19?"Buenas tardes":"Buenas noches";}
+function isWeekend(){const d=new Date().getDay();return d===0||d===6;}
+function isNight(){return new Date().getHours()>=20;}
+function dayOfYear(){const n=new Date(),s=new Date(n.getFullYear(),0,0);return Math.floor((n-s)/86400000);}
+function videoOfDay(){return VIDEOS[dayOfYear()%VIDEOS.length];}
+function quoteOfDay(){return EPIC_QUOTES[dayOfYear()%EPIC_QUOTES.length];}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");}
+function isChecked(pid,i){return !!state.checked[todayKey()+"_"+pid+"_"+i];}
+function toggleTask(pid,i){const k=todayKey()+"_"+pid+"_"+i;state.checked[k]=!state.checked[k];save();if(view==="dashboard")renderDash();else if(view==="pillar")render();}
+function isExChecked(d,e){return !!state.checked["gym_"+d+"_"+e];}
+function toggleEx(d,e){const k="gym_"+d+"_"+e;state.checked[k]=!state.checked[k];save();render();}
+function pillarPct(pid){const p=PILLARS.find(x=>x.id===pid);const done=p.tasks.filter((_,i)=>isChecked(pid,i)).length;return{done,total:p.tasks.length,pct:Math.round(done/p.tasks.length*100)};}
+function totalPct(){let d=0,t=0;PILLARS.forEach(p=>{const r=pillarPct(p.id);d+=r.done;t+=r.total;});return{done:d,total:t,pct:Math.round(d/t*100)};}
+function weekDays(){const days=[];const now=new Date();for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);const k=d.toISOString().split("T")[0];days.push({k,label:["D","L","M","X","J","V","S"][d.getDay()],pct:state.weekLog[k]||0});}return days;}
+function markDone(){const tk=todayKey();if(state.lastDone!==tk){state.streak+=1;if(state.streak>state.bestStreak)state.bestStreak=state.streak;state.lastDone=tk;}state.weekLog[tk]=totalPct().pct;save();renderDash();}
+function addScreen(min){checkScreenDay();state.screenMinutes+=min;if(state.screenMinutes<0)state.screenMinutes=0;save();render();}
+
+// ── NAVEGACIÓN ────────────────────────────────────────
+let view="dashboard";let viewPillar=null;let speechMode=null;let speechLines=[];
+function go(v,extra){view=v;viewPillar=extra||null;window.scrollTo(0,0);render();}
+function showSpeech(mode){speechMode=mode;let pool=SPEECHES[mode]||SPEECHES.hype;if(mode==="weak"&&isWeekend())pool=SPEECHES.weekend;speechLines=pick(pool);go("coach_out");}
+function bottomBar(title,backAct){backAct=backAct||"back";return `<div class="bottom-bar"><button class="bb-back" data-act="${backAct}">← Volver</button><div class="bb-title">${title}</div><div class="bb-space"></div></div>`;}
+
+// ── RENDER ────────────────────────────────────────────
+function render(){
+  const app=document.getElementById("app");
+  const views={dashboard:vDash,pillar:vPillar,gym:vGym,nutrition:vNutrition,supplements:vSupp,hormonal:vHormonal,rutina:vRutina,pantallas:vPantallas,progreso:vProgreso,conexion:vConexion,coach:vCoach,coach_out:vCoachOut,videos:vVideos,guide:vGuide};
+  app.innerHTML=(views[view]||vDash)();
+  bindEvents();
+}
+function renderDash(){if(view==="dashboard"){document.getElementById("app").innerHTML=vDash();bindEvents();}}
+
+// ---
+
+function vDash(){
+  checkScreenDay();
+  const total=totalPct();const tk=todayKey();
+  const showWeak=(isNight()||isWeekend())&&!state.dismissedWeak&&total.pct<100;
+  const totalColor=total.pct===100?"#00C878":total.pct>60?"#0D7BFF":"#FF3B0D";
+  const v=videoOfDay();const q=quoteOfDay();const wd=weekDays();
+  const screenPct=Math.min(100,Math.round(state.screenMinutes/60*100));
+  const screenColor=state.screenMinutes>=60?"#FF3B0D":state.screenMinutes>=30?"#FF8C00":"#00C878";
+
+  return `<div class="page active">
+  ${showWeak?`<div style="background:linear-gradient(135deg,#2a0a00,#1a0500);border:1px solid #FF3B0D55;margin:0 0 0;padding:env(safe-area-inset-top,20px) 16px 16px;position:relative">
+    <button style="position:absolute;top:calc(env(safe-area-inset-top,20px) + 6px);right:14px;color:#FF6B3D;font-size:16px" data-act="dismiss-weak">✕</button>
+    <div style="font-size:13px;font-weight:800;color:#FF6B3D;margin-bottom:6px">${isWeekend()?"📅 ES FIN DE SEMANA":"🌙 ES DE NOCHE"}</div>
+    <p style="font-size:12px;color:#ddd;line-height:1.6;margin-bottom:10px">${isWeekend()?"30 min en MindFit o Python. Después disfruta sin culpa.":"Una tarea más. Descansas con orgullo, no con culpa."}</p>
+    <button style="background:#FF3B0D;border-radius:9px;color:#fff;font-weight:700;font-size:13px;padding:9px 16px" data-act="speech-weak">⚡ Háblame</button>
+  </div>`:``}
+
+  <div class="header" ${showWeak?'style="padding-top:18px"':''}>
+    <div class="header-top">
+      <div><div class="greeting">${greeting()},</div><div class="name">Manuel. 🔥</div></div>
+      <div class="streak-wrap">
+        <div class="streak-badge"><span style="font-size:17px">🔥</span><span class="streak-num">${state.streak}</span></div>
+        <div class="streak-label">RACHA · RÉC ${state.bestStreak}</div>
+      </div>
+    </div>
+    <div class="quote-box"><p class="quote-text">"${esc(q.text)}"</p><p class="quote-author">— ${esc(q.author)}</p></div>
+    <div class="total-label"><span style="color:#888">Hoy</span><span style="font-weight:800">${total.done}/${total.total}</span></div>
+    <div class="total-bar"><div class="total-fill" style="width:${total.pct}%;background:${totalColor}"></div></div>
+    ${total.pct===100?`<div class="complete-msg">⚡ DÍA COMPLETO. ASÍ SE CONSTRUYE.</div>`:""}
+  </div>
+
+  <div style="padding:12px 16px 0">
+    <div class="sec-label" style="display:block;margin-bottom:8px">SEMANA</div>
+    <div class="week-grid">
+      ${wd.map(d=>`<div class="day-dot ${d.pct===100?"full":d.pct>0?"partial":""}"><span>${d.label}</span><span style="font-size:7px">${d.pct>0?d.pct+"%":""}</span></div>`).join("")}
+    </div>
+  </div>
+
+  <div style="padding:12px 16px 0">
+    <div class="sec-label" style="display:block;margin-bottom:8px">PILARES</div>
+    <div class="pillars-grid">
+      ${PILLARS.map(p=>{const r=pillarPct(p.id);return`<button class="pillar-card" style="border-top:3px solid ${p.color}" data-act="pillar" data-pillar="${p.id}"><div class="pc-top"><span class="pc-emoji">${p.emoji}</span><span class="pc-label" style="color:${p.accent}">${p.label}</span></div><div class="mini-bar"><div class="mini-fill" style="width:${r.pct}%;background:${p.color}"></div></div><div class="pc-stats"><span style="color:#666;font-size:11px">${r.done}/${r.total}</span><span style="color:${p.accent};font-weight:800;font-size:13px">${r.pct}%</span></div></button>`;}).join("")}
+    </div>
+  </div>
+
+  <!-- PANTALLAS QUICK -->
+  <div style="padding:10px 16px 0">
+    <div class="sec" style="border-left:3px solid ${screenColor}">
+      <div class="sec-top"><span class="sec-label">📱 PANTALLAS HOY</span><button class="sec-link" data-act="go-pantallas">Ver tracker →</button></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:28px;font-weight:900;color:${screenColor}">${state.screenMinutes}min</div>
+        <div style="flex:1"><div class="screen-bar" style="margin:0 0 4px"><div class="screen-fill" style="width:${screenPct}%;background:${screenColor}"></div></div>
+        <div style="font-size:11px;color:#666">Límite: 60 min · ${state.screenMinutes>=60?"⚠️ Límite alcanzado":"Quedan "+(60-state.screenMinutes)+"min"}</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:10px 16px 0">
+    <div class="sec-label" style="display:block;margin-bottom:8px">HERRAMIENTAS</div>
+    <div class="tools-grid">
+      ${[["go-gym","🏋️","GYM"],["go-nutrition","🥗","NUTRICIÓN"],["go-supplements","💊","SUPLEMENTOS"],["go-hormonal","⚡","HORMONAL"],["go-rutina","🕐","RUTINA"],["go-progreso","📸","PROGRESO"],["go-conexion","🌱","CONEXIÓN"],["go-coach","🤖","COACH"],["go-videos","🎬","VIDEOS"],["go-guide","📖","GUÍA"]].map(([a,e,l])=>`<button class="tool-btn" data-act="${a}"><span class="tool-emoji">${e}</span><span class="tool-label">${l}</span></button>`).join("")}
+    </div>
+  </div>
+
+  <div style="padding:10px 16px 0">
+    <div class="sec">
+      <div class="sec-top"><span class="sec-label">⚡ VIDEO DE HOY</span><button class="sec-link" data-act="go-videos">Ver todos →</button></div>
+      <a class="v-card" href="https://youtu.be/${v.id}" target="_blank" rel="noopener">
+        <div class="v-thumb today">▶</div>
+        <div><div class="v-name">${esc(v.title)}</div><div class="v-by">${esc(v.by)}</div><div class="v-note">"${esc(v.note)}"</div></div>
+      </a>
+    </div>
+  </div>
+
+  <div style="padding:10px 16px 0">
+    <button class="hype-btn" data-act="speech-hype">🔥 DAME FUEGO AHORA</button>
+    <button class="done-btn ${state.lastDone===tk?"done":""}" data-act="done">
+      ${state.lastDone===tk?"✅ DÍA CERRADO — NOS VEMOS MAÑANA":"✅ CERRAR EL DÍA (+1 racha)"}
+    </button>
+    <p class="footer-note">No rompas la cadena.</p>
+  </div>
+  <div style="height:20px"></div>
+  </div>`;
+}
+
+function vPillar(){
+  const p=PILLARS.find(x=>x.id===viewPillar);const r=pillarPct(p.id);
+  return `<div class="page active"><div class="sub-wrap" style="border-top:4px solid ${p.color}">
+    <div style="display:flex;align-items:center;gap:14px;margin:14px 0 14px"><span style="font-size:36px">${p.emoji}</span>
+      <div><div style="font-size:20px;font-weight:900;color:${p.accent}">${p.label}</div><div style="font-size:12px;color:#666;margin-top:2px">${p.desc}</div></div>
+    </div>
+    <div style="background:#111;border-left:3px solid ${p.color};border-radius:8px;padding:11px 13px;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:800;letter-spacing:1px;color:${p.accent}">POR QUÉ IMPORTA</div>
+      <p style="font-size:13px;color:#ccc;margin-top:5px;line-height:1.6">${esc(p.why)}</p>
+    </div>
+    <div class="progress-row" style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <div style="flex:1;height:6px;background:#222;border-radius:3px;overflow:hidden"><div style="width:${r.pct}%;height:100%;background:${p.color};border-radius:3px;transition:width .4s"></div></div>
+      <span style="color:${p.accent};font-weight:800">${r.pct}%</span>
+    </div>
+    ${p.tasks.map((t,i)=>{const done=isChecked(p.id,i);return`<button class="task-btn" style="border-color:${done?p.color:"#2a2a2a"};background:${done?p.color+"1A":"#161616"}" data-act="toggle" data-pillar="${p.id}" data-idx="${i}"><span class="task-check" style="color:${done?p.color:"#444"}">${done?"✓":"○"}</span><span class="task-text" style="color:${done?"#fff":"#bbb"};text-decoration:${done?"line-through":"none"}">${esc(t.t)}</span>${t.key?`<span class="key-tag" style="color:${p.accent};border-color:${p.color}55">CLAVE</span>`:""}</button>`;}).join("")}
+    <div style="background:#111;border-left:3px solid ${p.color};border-radius:8px;padding:12px 14px;margin-top:6px">
+      <div style="font-size:11px;font-weight:800;color:${p.accent}">💡 RECUERDA</div>
+      <p style="font-size:12px;color:#aaa;margin-top:6px;line-height:1.65;font-style:italic">${esc(p.tip)}</p>
+    </div>
+  </div>
+  ${bottomBar(p.label)}</div>`;
+}
+
+function vGym(){
+  const d=GYM_PLAN[state.gymDayIdx%3];
+  return `<div class="page active"><div class="sub-wrap">
+    <h2 class="sub-title">🏋️ PLAN GYM</h2>
+    <p style="font-size:12px;color:#888;margin-bottom:14px">MindFit · Los Leones · 3 días/sem · 45-60 min · Recomposición</p>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      ${GYM_PLAN.map((g,i)=>`<button data-act="gym-day" data-idx="${i}" style="flex:1;padding:10px 4px;border-radius:10px;border:1px solid ${i===state.gymDayIdx%3?g.color:"#2a2a2a"};background:${i===state.gymDayIdx%3?g.color+"22":"#131313"};font-size:11px;font-weight:800;color:${i===state.gymDayIdx%3?g.color:"#666"}">${g.day}<br><span style="font-size:9px">${g.type}</span></button>`).join("")}
+    </div>
+    <div style="background:${d.color}22;border:1px solid ${d.color}55;border-radius:12px;padding:13px;margin-bottom:14px">
+      <div style="font-size:13px;font-weight:800;color:${d.color}">${d.day} — ${d.type}</div>
+      <div style="font-size:12px;color:#aaa;margin-top:3px">${d.focus}</div>
+      <div style="font-size:11px;color:#666;margin-top:6px">🔥 ${d.warmup}</div>
+    </div>
+    ${d.exercises.map((ex,i)=>{
+      const done=isExChecked(state.gymDayIdx%3,i);
+      const ytQ=encodeURIComponent(ex.alts[0]+' ejercicio como hacer');
+      return`<div class="ex-item" style="flex-direction:column;align-items:stretch;${done?"border-color:"+d.color+"55;background:"+d.color+"0D":""}">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <button class="ex-check" style="${done?"background:"+d.color+";border-color:"+d.color+";color:#fff":""}" data-act="ex-toggle" data-day="${state.gymDayIdx%3}" data-ex="${i}">${done?"✓":""}</button>
+          <div style="flex:1">
+            <div class="ex-name" style="${done?"color:#666;text-decoration:line-through":""}">${esc(ex.name)}</div>
+            <div class="ex-detail">${ex.sets}×${ex.reps} · Descanso ${ex.rest}</div>
+          </div>
+          <a href="https://www.youtube.com/results?search_query=${ytQ}" target="_blank" rel="noopener" style="background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;color:#FF3B0D;text-decoration:none;flex-shrink:0">▶ Ver</a>
+        </div>
+        <div style="background:#0d0d0d;border-radius:8px;padding:9px 11px;margin-bottom:6px">
+          <div style="font-size:10px;font-weight:800;color:#666;letter-spacing:.5px;margin-bottom:5px">ALTERNATIVAS EN MINDFIT</div>
+          ${ex.alts.map((a,ai)=>`<div style="display:flex;align-items:center;gap:7px;margin-bottom:${ai<ex.alts.length-1?4:0}px">
+            <span style="font-size:10px;font-weight:800;background:${d.color}22;color:${d.color};padding:1px 6px;border-radius:4px;flex-shrink:0">${ai===0?"★":"○"}</span>
+            <span style="font-size:12px;color:${ai===0?"#ddd":"#888"}">${esc(a)}</span>
+          </div>`).join("")}
+        </div>
+        <div class="ex-tip">💡 ${esc(ex.tip)}</div>
+      </div>`;}).join("")}
+    <div style="background:#131313;border:1px solid #242424;border-radius:11px;padding:13px;margin-top:14px">
+      <div style="font-size:11px;font-weight:800;color:#666;margin-bottom:8px">📈 PROGRESIÓN</div>
+      ${["Sem 1-2: aprende los movimientos. El ego lesiona al principio.",
+         "Sem 3: sube 10% el peso en ejercicios que ya dominas.",
+         "Mes 2: agrega una serie en los compuestos (sentadilla, press).",
+         "Siempre: si no puedes hablar durante el ejercicio, el peso es demasiado.",
+         "Transición a mañanas: cuando lleves 4-6 sem consolidadas. No antes."
+        ].map(t=>`<p style="font-size:12px;color:#888;margin-bottom:6px;line-height:1.5">• ${t}</p>`).join("")}
+    </div>
+  </div>${bottomBar("PLAN GYM")}</div>`;
+}
+
+function vNutrition(){
+  const N=NUTRITION;
+  return `<div class="page active"><div class="sub-wrap">
+    <h2 class="sub-title">🥗 NUTRICIÓN</h2>
+    <p class="sub-intro">Recomposición: perder grasa y ganar músculo. Posible en tu etapa inicial. La proteína es lo único no negociable.</p>
+    <div class="macro-row">
+      <div class="macro-box"><div class="macro-num" style="color:#FF3B0D">${N.calories}</div><div class="macro-unit">kcal</div><div class="macro-label">Calorías</div></div>
+      <div class="macro-box"><div class="macro-num" style="color:#4D9EFF">${N.protein}g</div><div class="macro-unit">proteína</div><div class="macro-label">Prioridad #1</div></div>
+      <div class="macro-box"><div class="macro-num" style="color:#2EE894">${N.carbs}g</div><div class="macro-unit">carbos</div><div class="macro-label">Energía</div></div>
+    </div>
+    <div class="alert-box"><div class="alert-title">🎯 REGLA DE ORO</div><div class="alert-text">Si el día se complica, llega al menos a <strong style="color:#fff">${N.protein}g de proteína</strong>. Eso protege el músculo y regula el hambre. Lo demás se ajusta.</div></div>
+    ${N.meals.map(m=>`<div class="meal-item"><div class="meal-time">${m.time}</div><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><span style="font-size:20px">${m.icon}</span><div class="meal-title">${esc(m.title)}</div></div><div class="meal-desc">${esc(m.desc)}</div><div style="font-size:11px;color:#4D9EFF;margin-top:5px">~${m.protein}g proteína</div><div style="font-size:11px;color:#FF6B3D;margin-top:4px;font-style:italic">💡 ${esc(m.tip)}</div></div>`).join("")}
+    <div style="background:#131313;border:1px solid #242424;border-radius:12px;padding:14px;margin-top:6px">
+      <div style="font-size:12px;font-weight:800;color:#fff;margin-bottom:8px">🍝 TUS TALLARINES — cómo hacerlos funcionar</div>
+      <p style="font-size:12px;color:#aaa;line-height:1.6">Los tallarines no son el problema — les falta proteína. Agrega atún mezclado en la salsa, pollo desmenuzado, o huevo duro picado. Con eso pasan de comida vacía a comida completa.</p>
+    </div>
+  </div>${bottomBar("NUTRICIÓN")}</div>`;
+}
+
+function vSupp(){
+  return `<div class="page active"><div class="sub-wrap">
+    <h2 class="sub-title">💊 SUPLEMENTOS</h2>
+    <p class="sub-intro">Solo lo que tiene evidencia real. Ya tienes los dos más importantes. El orden importa.</p>
+    ${SUPPLEMENTS.map(s=>`<div class="supp-item"><span class="supp-icon">${s.icon}</span><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;margin-bottom:3px"><div class="supp-name" style="color:${s.color}">${esc(s.name)}</div><span style="font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;background:${s.color}22;color:${s.color}">${s.priority}</span></div><div class="supp-dose">📏 ${esc(s.dose)}</div><div style="font-size:11px;color:#888;margin-bottom:4px">⏰ ${esc(s.when)}</div><div class="supp-why">${esc(s.why)}</div></div></div>`).join("")}
+    <div style="background:#0d1a10;border:1px solid #1a4020;border-radius:12px;padding:14px;margin-top:6px">
+      <div style="font-size:12px;font-weight:800;color:#2EE894;margin-bottom:8px">📋 ORDEN DE COMPRA</div>
+      <p style="font-size:12px;color:#aaa;line-height:1.8">1. <strong style="color:#fff">Proteína + Creatina</strong> ✅ Ya los tienes<br>2. <strong style="color:#fff">Vitamina D3</strong> — ~$8.000/mes farmacia<br>3. <strong style="color:#fff">ZMA (Zinc+Magnesio)</strong> — ~$12.000/mes<br>4. <strong style="color:#fff">Omega-3</strong> — ~$10.000/mes</p>
+    </div>
+  </div>${bottomBar("SUPLEMENTOS")}</div>`;
+}
+
+function vHormonal(){
+  return `<div class="page active"><div class="sub-wrap">
+    <h2 class="sub-title">⚡ SALUD HORMONAL</h2>
+    <p class="sub-intro">Testosterona, libido, energía — lo que las sube y lo que las destruye. Sin humo, con ciencia.</p>
+    <div class="alert-box" style="background:#0a1020;border-color:#4D9EFF44">
+      <div class="alert-title" style="color:#4D9EFF">🔬 PRIMERO: MÍDETE</div>
+      <div class="alert-text">Sin datos no hay diagnóstico. Pide: Testosterona total y libre · Vitamina D (25-OH) · TSH · Hemograma · Glucosa.<br><br><strong style="color:#4D9EFF">~$30.000-50.000 en laboratorio privado. Vale cada peso.</strong></div>
+    </div>
+    ${HORMONAL.map(h=>`<div class="hormone-card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:22px">${h.icon}</span><div><div style="font-size:13px;font-weight:800">${esc(h.title)}</div><span class="hc-impact" style="background:${h.impactColor}22;color:${h.impactColor}">${h.impact}</span></div></div><p style="font-size:12px;color:#aaa;line-height:1.6;margin-bottom:6px">${esc(h.desc)}</p><div style="font-size:12px;font-weight:600;color:#ccc">${esc(h.action)}</div></div>`).join("")}
+    <div class="divider"></div>
+    <div style="background:#131313;border:1px solid #242424;border-radius:12px;padding:14px">
+      <div style="font-size:13px;font-weight:800;color:#fff;margin-bottom:8px">Lo de la otra noche — qué pasó de verdad</div>
+      <p style="font-size:12px;color:#aaa;line-height:1.65;margin-bottom:10px">Lo que viviste se llama ansiedad de desempeño situacional. No es disfunción, no es T baja, no es un problema permanente. Con alcohol + nervios + presión de rendir, el sistema nervioso simpático bloquea físicamente la respuesta sexual. Es mecánica, no hormonas.</p>
+      <p style="font-size:12px;color:#ccc;font-weight:600;margin-bottom:6px">Pregúntate:</p>
+      ${["¿Amaneces con erecciones? Si sí, tu plomería funciona.","¿Respuesta normal cuando estás relajado y solo? Confirma lo anterior.","Si ambas son sí: el problema fue el contexto — principalmente el alcohol."].map(q=>`<p style="font-size:12px;color:#aaa;margin-bottom:5px">• ${q}</p>`).join("")}
+    </div>
+  </div>${bottomBar("HORMONAL")}</div>`;
+}
+
+function vRutina(){
+  const phases=["MAÑANA","TRABAJO","TARDE","NOCHE"];
+  const phaseColors={"MAÑANA":"#FF8C00","TRABAJO":"#00C878","TARDE":"#FF3B0D","NOCHE":"#A020F0"};
+  return `<div class="page active"><div class="sub-wrap">
+    <h2 class="sub-title">🕐 RUTINA DIARIA</h2>
+    <p class="sub-intro">Tu día estructurado con horarios reales. Sin improvisación. Cada bloque tiene un propósito.</p>
+    ${RUTINA.map((r,i)=>{
+      const showPhase=i===0||RUTINA[i-1].phase!==r.phase;
+      return`${showPhase?`<div style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:${phaseColors[r.phase]};margin:${i===0?"0":"16px"} 0 8px">${r.phase}</div>`:""}
+      <div class="rutina-block" style="border-left:3px solid ${r.color}">
+        <div class="rutina-time" style="color:${r.color}">${r.emoji} ${r.time}</div>
+        <div class="rutina-title">${esc(r.title)}</div>
+        <div class="rutina-desc">${esc(r.desc)}</div>
+        <div class="rutina-tip" style="color:#FF6B3D">💡 ${esc(r.tip)}</div>
+      </div>`;}).join("")}
+    <div style="background:linear-gradient(135deg,#0d1a10,#081008);border:1px solid #1a4020;border-radius:12px;padding:14px;margin-top:14px">
+      <div style="font-size:12px;font-weight:800;color:#2EE894;margin-bottom:8px">🎯 OBJETIVO FUTURO: GYM EN LA MAÑANA</div>
+      <p style="font-size:12px;color:#aaa;line-height:1.6;margin-bottom:8px">${esc(RUTINA_FUTURA.when)}</p>
+      ${RUTINA_FUTURA.steps.map(s=>`<p style="font-size:12px;color:#ccc;margin-bottom:4px">• ${s}</p>`).join("")}
+      <p style="font-size:12px;color:#2EE894;margin-top:8px;font-weight:600">Beneficio: ${esc(RUTINA_FUTURA.benefit)}</p>
+    </div>
+  </div>${bottomBar("RUTINA DIARIA")}</div>`;
+}
+
+function vPantallas(){
+  checkScreenDay();
+  const pct=Math.min(100,Math.round(state.screenMinutes/60*100));
+  const color=state.screenMinutes>=60?"#FF3B0D":state.screenMinutes>=30?"#FF8C00":"#00C878";
+  const msg=state.screenMinutes>=60?"⚠️ Límite alcanzado. Cierra las pantallas.":state.screenMinutes>=30?"Vas por la mitad del límite.":"Bien. Sigues en control.";
+  return `<div class="page active"><div class="sub-wrap">
+    <h2 class="sub-title">📱 TRACKER PANTALLAS</h2>
+    <p class="sub-intro">Tienes más de 2h diarias de scroll mezclado. Ese tiempo es energía, Python y gym que no existieron. Límite: 1h consciente.</p>
+    <div class="sec">
+      <div class="screen-display">
+        <div class="screen-num" style="color:${color}">${state.screenMinutes}</div>
+        <div class="screen-unit">minutos hoy</div>
+      </div>
+      <div class="screen-bar"><div class="screen-fill" style="width:${pct}%;background:${color}"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#666;margin-bottom:14px"><span>0 min</span><span style="color:${color};font-weight:700">Límite: 60 min</span></div>
+      <p style="font-size:13px;font-weight:700;color:${color};text-align:center;margin-bottom:14px">${msg}</p>
+      <div class="screen-btns">
+        <button class="screen-btn red" data-act="screen-add-30">+30 min</button>
+        <button class="screen-btn" data-act="screen-add-15">+15 min</button>
+        <button class="screen-btn green" data-act="screen-sub-15">-15 min</button>
+      </div>
+    </div>
+    <div style="background:#131313;border:1px solid #242424;border-radius:12px;padding:14px;margin-top:10px">
+      <div style="font-size:12px;font-weight:800;color:#fff;margin-bottom:10px">🔄 QUÉ HACER CON ESE TIEMPO</div>
+      ${[["En vez de 30 min de scroll","→ 25 min Python. Mismo tiempo. Resultado completamente distinto."],
+         ["En vez de 1h de Netflix automático","→ Gym. Sale el mismo tiempo y te da energía para el resto del día."],
+         ["En vez de Instagram antes de dormir","→ 2 min de reflexión + apagar. El sueño mejora 30% sin pantallas 30 min antes."],
+         ["En vez de YouTube sin propósito","→ Video de tu arsenal de RISE. Mismo formato, distinto resultado en tu cabeza."],
+      ].map(([from,to])=>`<div style="margin-bottom:10px"><p style="font-size:12px;color:#666">${from}</p><p style="font-size:12px;color:#2EE894;font-weight:600">${to}</p></div>`).join("")}
+    </div>
+  </div>${bottomBar("PANTALLAS")}</div>`;
+}
+
+function vConexion(){
+  return `<div class="page active"><div class="sub-wrap">
+    <h2 class="sub-title">🌱 CONEXIÓN REAL</h2>
+    <p class="sub-intro">Tienes vida social activa pero conexiones superficiales. El problema no es cantidad — es calidad y contexto.</p>
+    <div class="week-challenge">
+      <div class="wc-label">DESAFÍO DE ESTA SEMANA</div>
+      <div class="wc-text">Un mensaje real a una persona real. No "hola cómo estás" — algo concreto y con intención. Un almuerzo, un plan específico, una conversación de verdad. Una sola. Esta semana.</div>
+    </div>
+    ${CONEXION.map(c=>`<div class="conex-item" style="border-left:3px solid ${c.color}">
+      <div class="conex-title"><span style="margin-right:8px">${c.emoji}</span>${esc(c.title)}</div>
+      <div class="conex-desc">${esc(c.desc)}</div>
+      ${c.action?`<div class="conex-action" style="color:${c.color}">${esc(c.action)}</div>`:""}
+    </div>`).join("")}
+    <div style="background:#131313;border:1px solid #242424;border-radius:12px;padding:14px;margin-top:6px">
+      <div style="font-size:12px;font-weight:800;color:#fff;margin-bottom:8px">📍 CONTEXTOS QUE FUNCIONAN EN SANTIAGO</div>
+      ${[["🏋️ MindFit","Ya lo tienes. Es un contexto nuevo con personas que también se cuidan."],
+         ["🧑‍💻 Comunidad del magíster","Compañeros con ambición similar. Organiza un café de estudio."],
+         ["🏃 Deporte en grupo","Running clubs, fútbol, paddle — contacto regular sin alcohol."],
+         ["🎓 Meetups / eventos","Data science meetups en Santiago. Tu magíster te da excusa perfecta."],
+         ["☕ Desayunos, no bares","Propón planes diurnos. Las conexiones reales no necesitan alcohol."],
+      ].map(([t,d])=>`<div style="margin-bottom:9px"><p style="font-size:13px;font-weight:700;color:#ccc">${t}</p><p style="font-size:12px;color:#888;line-height:1.5">${d}</p></div>`).join("")}
+    </div>
+  </div>${bottomBar("CONEXIÓN")}</div>`;
+}
+
+function vCoach(){
+  const opts=[
+    {m:"hype",e:"🔥",t:"Discurso Épico",d:"Necesito fuego AHORA"},
+    {m:"coach",e:"📋",t:"Plan 24 Horas",d:"Dime exactamente qué hacer"},
+    {m:"weak",e:"⚡",t:"Estoy Flaqueando",d:"No me dejes rendirme"},
+    {m:"procrastina",e:"😤",t:"Estoy Procrastinando",d:"Sé lo que debo hacer y no lo hago"},
+    {m:"energia",e:"🔋",t:"Sin Energía",d:"No tengo fuerzas para nada"},
+    {m:"soledad",e:"🌙",t:"Me Siento Solo",d:"Las conexiones no se sienten reales"},
+    {m:"check",e:"🧘",t:"Check-in Mental",d:"Cómo estoy de verdad"},
+    {m:"review",e:"📊",t:"Revisión",d:"Analizar y ajustar"},
+  ];
+  return `<div class="page active"><div class="sub-wrap">
+    <h2 class="sub-title">🤖 COACH</h2>
+    <p class="sub-intro">¿Qué necesitas ahora mismo?</p>
+    ${opts.map(x=>`<button class="coach-card" data-act="speech-${x.m}"><span class="cc-emoji">${x.e}</span><div><div class="cc-title">${x.t}</div><div class="cc-desc">${x.d}</div></div></button>`).join("")}
+  </div>${bottomBar("COACH")}</div>`;
+}
+
+function vCoachOut(){
+  const labels={hype:"🔥 DISCURSO ÉPICO",coach:"📋 PLAN 24H",weak:"⚡ NO TE RINDAS",weekend:"📅 FINDE",procrastina:"😤 PROCRASTINACIÓN",energia:"🔋 SIN ENERGÍA",soledad:"🌙 SOLEDAD",check:"🧘 CHECK-IN",review:"📊 REVISIÓN"};
+  const body=speechLines.map(line=>{const isE=line===line.toUpperCase()&&line.length>4;return`<p class="${isE?"epic-line":"coach-para"}">${esc(line)}</p>`;}).join("");
+  return `<div class="page active"><div class="sub-wrap">
+    <div style="font-size:12px;letter-spacing:2px;color:#FF3B0D;font-weight:800;margin-bottom:16px">${labels[speechMode]||"COACH"}</div>
+    <div>${body}</div>
+    <div style="display:flex;gap:10px;margin-top:24px">
+      <button style="flex:1;background:#FF3B0D;border-radius:11px;color:#fff;font-weight:800;font-size:14px;padding:13px" data-act="speech-${speechMode}">↺ Otra vez</button>
+      <button style="flex:1;background:transparent;border:1px solid #2e2e2e;border-radius:11px;color:#888;font-size:14px;padding:13px" data-act="go-coach">Más opciones</button>
+    </div>
+  </div>${bottomBar(labels[speechMode]||"COACH","go-coach")}</div>`;
+}
+
+function vProgreso(){
+  const A=ANTROPO;
+  const today=new Date().getDate();
+  const isFotoDay=today===A.foto.dia;
+  return `<div class="page active"><div class="sub-wrap">
+    <h2 class="sub-title">📸 PROGRESO FÍSICO</h2>
+    <p class="sub-intro">Datos reales de tu evaluación antropométrica. Aquí se mide el cambio real — no la balanza, la composición.</p>
+
+    ${isFotoDay?`<div style="background:linear-gradient(135deg,#1a0d00,#0d0800);border:2px solid #FF8C00;border-radius:14px;padding:15px;margin-bottom:14px">
+      <div style="font-size:14px;font-weight:900;color:#FF8C00;margin-bottom:6px">📸 HOY ES DÍA DE FOTO</div>
+      <p style="font-size:13px;color:#ddd;line-height:1.6">Mismo baño, misma luz, mismo encuadre que las fotos originales. Frente + perfil derecho + espalda. Guárdalas en el álbum "RISE Progreso" para comparar.</p>
+    </div>`:""}
+
+    <div style="background:#131313;border:1px solid #242424;border-radius:13px;padding:15px;margin-bottom:12px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:1px;color:#666;margin-bottom:12px">📊 LÍNEA BASE — ${A.fecha}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        ${[["Peso","101.7 kg","#FF3B0D"],["Grasa","29.8 kg (29.3%)","#FF3B0D"],["Músculo","43.6 kg (42.8%)","#4D9EFF"],["Talla","190 cm","#2EE894"]].map(([l,v,c])=>`<div style="background:#111;border:1px solid #222;border-radius:9px;padding:11px;text-align:center"><div style="font-size:16px;font-weight:900;color:${c}">${v}</div><div style="font-size:10px;color:#666;margin-top:3px">${l}</div></div>`).join("")}
+      </div>
+      <div style="background:#111;border:1px solid #222;border-radius:9px;padding:11px;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:800;color:#888;margin-bottom:6px">SOMATOTIPO</div>
+        <div style="display:flex;gap:8px">
+          ${[["Endomorfo","5.3","#FF3B0D"],["Mesomorfo","4.0","#4D9EFF"],["Ectomorfo","1.2","#888"]].map(([l,v,c])=>`<div style="flex:1;text-align:center"><div style="font-size:18px;font-weight:900;color:${c}">${v}</div><div style="font-size:10px;color:#666">${l}</div></div>`).join("")}
+        </div>
+        <p style="font-size:11px;color:#888;margin-top:8px;line-height:1.5">Predominantemente endomorfo (acumulas grasa con facilidad) con componente mesomorfo real (construyes músculo bien). Eso significa que el plan funciona — pero la dieta es el 80% del resultado.</p>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#0d1a10,#081008);border:1px solid #1a4020;border-radius:13px;padding:15px;margin-bottom:12px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:1px;color:#2EE894;margin-bottom:12px">🎯 OBJETIVO REALISTA — 6 MESES</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        ${[["Peso meta","95-97 kg","#2EE894"],["Grasa meta","18-20%","#2EE894"]].map(([l,v,c])=>`<div style="background:#111;border:1px solid #1a4020;border-radius:9px;padding:11px;text-align:center"><div style="font-size:16px;font-weight:900;color:${c}">${v}</div><div style="font-size:10px;color:#666;margin-top:3px">${l}</div></div>`).join("")}
+      </div>
+      <p style="font-size:12px;color:#aaa;line-height:1.6">No es bajar de peso — es cambiar la composición. A 190cm, 95kg bien compuestos se ven completamente distintos a 101kg con grasa abdominal. La balanza no es el indicador — las fotos y las medidas sí.</p>
+    </div>
+
+    <div style="background:#131313;border:1px solid #242424;border-radius:13px;padding:15px;margin-bottom:12px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:1px;color:#FF6B3D;margin-bottom:12px">🔍 LO QUE VEO EN TUS FOTOS</div>
+      ${A.prioridades.map(p=>`<div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start"><span style="color:#FF3B0D;font-size:14px;flex-shrink:0">→</span><p style="font-size:12px;color:#ccc;line-height:1.6">${p}</p></div>`).join("")}
+    </div>
+
+    <div style="background:#131313;border:1px solid #242424;border-radius:13px;padding:15px;margin-bottom:12px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:1px;color:#4D9EFF;margin-bottom:10px">📅 PROTOCOLO DE FOTO MENSUAL</div>
+      <p style="font-size:12px;color:#aaa;line-height:1.6;margin-bottom:10px">Día ${A.foto.dia} de cada mes — mismo día, mismo lugar, misma luz.</p>
+      ${["Frente: brazos caídos naturales, misma distancia al espejo","Perfil derecho: igual que tus fotos actuales","Espalda: igual que tus fotos actuales","Bíceps flexionado: mismo ángulo que tu foto de referencia","Guardar en álbum 'RISE Progreso' con fecha en el nombre"].map((s,i)=>`<div style="display:flex;gap:10px;margin-bottom:7px;align-items:center"><span style="background:#4D9EFF22;color:#4D9EFF;font-size:11px;font-weight:800;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</span><p style="font-size:12px;color:#ccc">${s}</p></div>`).join("")}
+    </div>
+
+    <div style="background:#1a0d0d;border:1px solid #FF3B0D33;border-radius:13px;padding:15px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:1px;color:#FF6B3D;margin-bottom:8px">⚠️ AVISO IMPORTANTE</div>
+      <p style="font-size:12px;color:#aaa;line-height:1.6">La pauta de Gustavo es para 6-8 semanas y ya la sobrepasaste. Cuando retomes el gym el lunes o martes, considera volver a consultarlo para un control y ajuste. Tus datos han cambiado y el plan puede optimizarse.</p>
+    </div>
+  </div>${bottomBar("PROGRESO")}</div>`}
+
+function vVideos(){
+  const today=videoOfDay();
+  return `<div class="page active"><div class="sub-wrap">
+    <h2 class="sub-title">🎬 TU ARSENAL</h2>
+    <p class="sub-intro">Mismo ADN que "Why Do We Fall". Un video distinto cada día. Todos verificados.</p>
+    ${VIDEOS.map(v=>{const t=v.id===today.id;return`<a class="video-item ${t?"today":""}" href="https://youtu.be/${v.id}" target="_blank" rel="noopener"><div class="v-thumb ${t?"today":""}">▶</div><div>${t?`<div class="today-tag">HOY</div>`:""}<div class="v-name">${esc(v.title)}</div><div class="v-by">${esc(v.by)}</div><div class="v-note">"${esc(v.note)}"</div></div></a>`;}).join("")}
+    <p style="text-align:center;font-size:11px;color:#444;font-style:italic;margin-top:14px">Si algún link falla, pídeme el reemplazo.</p>
+  </div>${bottomBar("VIDEOS")}</div>`;
+}
+
+function vGuide(){
+  return `<div class="page active"><div class="sub-wrap">
+    <h2 class="sub-title">📖 CÓMO USAR ESTO</h2>
+    <p class="sub-intro">Sistema completo. Funciona si lo conviertes en ritual desde mañana.</p>
+    <div class="guide-block"><div class="guide-h">📱 DÓNDE Y CUÁNDO</div>
+      <div class="guide-item"><b class="g-blue">iPhone 6:30 AM</b> — antes que Instagram. Lee la frase, mira los pilares. Ese primer toque marca el día.</div>
+      <div class="guide-item"><b class="g-blue">MacBook en el trabajo</b> — pestaña fija. Marcas tareas al terminarlas. El check libera dopamina real.</div>
+      <div class="guide-item"><b class="g-blue">iPad domingo PM</b> — con café. Revisión del coach + plan de semana.</div>
+    </div>
+    <div class="guide-block red"><div class="guide-h" style="color:#FF6B3D">⚡ TUS PUNTOS DÉBILES</div>
+      <div class="guide-item"><b class="g-red">Noches:</b> toca "⚡ Estoy Flaqueando" en el coach. Una tarea mínima. Descansas con orgullo.</div>
+      <div class="guide-item"><b class="g-red">Fines de semana:</b> la app detecta que es finde y muestra el banner. 30 min y después vives.</div>
+      <div class="guide-item"><b class="g-red">Procrastinación:</b> coach → "Estoy Procrastinando". No pienses — abre y empieza.</div>
+      <div class="guide-item"><b class="g-red">Pantallas:</b> el tracker te dice cuánto llevas. Cuando llega a 60 min, se acaba.</div>
+    </div>
+    <div class="guide-block"><div class="guide-h">🏋️ GYM</div>
+      <div class="guide-item">Días A/B/C en MindFit Los Leones. Después del trabajo por ahora. Objetivo a futuro: mañanas. No antes de 4-6 semanas consolidadas.</div>
+    </div>
+    <div class="guide-block"><div class="guide-h">🔥 LA RACHA</div>
+      <div class="guide-item">Al cerrar el día sumas +1. Días malos: haz solo las tareas marcadas <span class="g-red">CLAVE</span>. La cadena se mantiene con el mínimo.<br><br><i>"No rompas la cadena."</i></div>
+    </div>
+    <div class="guide-block"><div class="guide-h">📲 INSTALAR EN iPHONE</div>
+      <div class="guide-item">1. Abre el archivo en <b>Safari</b> (no WhatsApp, no Mail).<br>2. Toca <b>Compartir</b> (cuadrito con flecha ↑).<br>3. Toca <b>"Agregar a inicio"</b>.<br>4. Ícono en tu pantalla. Abre a pantalla completa. Guarda tu progreso.</div>
+    </div>
+    <div style="text-align:center;font-size:13px;color:#555;font-style:italic;line-height:1.7;margin-top:20px;padding:0 20px">"El hombre que quieres ser ya existe.<br>Solo tienes que ir a buscarlo."</div>
+  </div>${bottomBar("GUÍA")}</div>`;
+}
+
+// ── EVENTOS ────────────────────────────────────────────
+function bindEvents(){
+  document.querySelectorAll("[data-act]").forEach(el=>{
+    el.addEventListener("click",e=>{
+      e.stopPropagation();
+      const act=el.getAttribute("data-act");
+      if(act==="back"||act==="go-dashboard") go("dashboard");
+      else if(act==="done") markDone();
+      else if(act==="dismiss-weak"){state.dismissedWeak=true;save();renderDash();}
+      else if(act==="pillar") go("pillar",el.getAttribute("data-pillar"));
+      else if(act==="toggle") toggleTask(el.getAttribute("data-pillar"),parseInt(el.getAttribute("data-idx")));
+      else if(act==="ex-toggle") toggleEx(parseInt(el.getAttribute("data-day")),parseInt(el.getAttribute("data-ex")));
+      else if(act==="gym-day"){state.gymDayIdx=parseInt(el.getAttribute("data-idx"));save();render();}
+      else if(act==="go-gym") go("gym");
+      else if(act==="go-nutrition") go("nutrition");
+      else if(act==="go-supplements") go("supplements");
+      else if(act==="go-hormonal") go("hormonal");
+      else if(act==="go-rutina") go("rutina");
+      else if(act==="go-pantallas") go("pantallas");
+      else if(act==="go-progreso") go("progreso");
+      else if(act==="go-conexion") go("conexion");
+      else if(act==="go-coach") go("coach");
+      else if(act==="go-videos") go("videos");
+      else if(act==="go-guide") go("guide");
+      else if(act==="screen-add-30") addScreen(30);
+      else if(act==="screen-add-15") addScreen(15);
+      else if(act==="screen-sub-15") addScreen(-15);
+      else if(act.startsWith("speech-")) showSpeech(act.replace("speech-",""));
+    });
+  });
+}
+
+render();
+</script>
+</body>
+</html>
